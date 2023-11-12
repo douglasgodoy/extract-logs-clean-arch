@@ -1,0 +1,1 @@
+startDatabase().then(startApp);
