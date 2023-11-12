@@ -18,7 +18,7 @@ const extractDataLogsController = async (_: Request, res: Response) => {
     const storeParsedLogsUseCase = new StoreParsedLogsUseCase(dbRepository)
     const responseUseCase = await storeParsedLogsUseCase.execute(dataToStore)
 
-    return ok(res, responseUseCase.body, responseUseCase.message)
+    return ok(res, responseUseCase.body!, responseUseCase.message!)
   } catch (error) {
     console.error("error", error);
     return internalServerError(res)

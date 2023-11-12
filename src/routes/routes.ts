@@ -1,7 +1,8 @@
-import { Application } from 'express';
 import { extractDataLogsController } from 'src/controllers';
+import { HttpApp } from 'src/models/http';
 
-const routes = (app: Application): void => {
+const routes = (app: HttpApp): void => {
   app.post('/extract-data', extractDataLogsController);
 };
+
 export default routes;

@@ -6,7 +6,7 @@ export const internalServerError = (res: HttpResponse) => {
 export const noContent = (res: HttpResponse) => {
     return res.status(204)
 }
-export const ok = (res: HttpResponse, body: Record<string, unknown>, message: string) => {
+export const ok = (res: HttpResponse, body: Record<string, unknown> | Array<object>, message: string) => {
     return res.status(200).json({ body, message })
 }
 

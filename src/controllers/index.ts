@@ -1,1 +1,1 @@
-export { default as extractDataLogsController } from './ExtractDataLogsController';
+export { default as extractDataLogsController } from './extractDataLogsController/extractDataLogsController';
