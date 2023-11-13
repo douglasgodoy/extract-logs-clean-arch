@@ -1,7 +1,7 @@
 import { HttpResponse } from "src/models"
 
 export const internalServerError = (res: HttpResponse) => {
-    return res.json({ msg: "Internal Server Error" }).status(500)
+    return res.status(500).json({ msg: "Internal Server Error" })
 }
 export const noContent = (res: HttpResponse) => {
     return res.status(204)

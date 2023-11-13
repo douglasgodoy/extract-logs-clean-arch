@@ -1,5 +1,6 @@
 import { FileManager, LogEntry, PathManager } from './ExtractDataLogsUseCase.d';
 import { IUseCase } from '../IUseCase';
+import { debug } from 'console';
 
 class ExtractDataLogsUseCase implements IUseCase {
   constructor(
@@ -10,54 +11,55 @@ class ExtractDataLogsUseCase implements IUseCase {
   parsedLines: LogEntry[] = [];
 
   async execute(directoryPath: string) {
-    this.fileManager.readdir(directoryPath, (err, files) => {
-      if (err) {
-        console.error('Error reading directory:', err);
-        return;
-      }
+    const files = await this.fileManager.readdirSync(directoryPath)
+    for await (const file of files) {
+      const result = await this.readFile(file, directoryPath)
+      this.parsedLines.push(...result)
+    }
 
-      files.forEach((file) => this.readFile(file, directoryPath));
-    });
-
-    return this.parsedLines;
+    return {
+      statusCode: 200,
+      body: this.parsedLines
+    };
   }
 
-  readFile(file: string, directoryPath: string) {
+  async readFile(file: string, directoryPath: string) {
     const filePath = this.pathManager.join(directoryPath, file);
 
-    this.fileManager.readFile(filePath, 'utf8', (err, data) => {
-      if (err) {
-        console.error(`Error reading ${filePath}:`, err);
-        return;
+    const data = await this.fileManager.readFileSync(filePath, 'utf8')
+    const lines = (<string>(<unknown>data)).split('\n');
+    let result: LogEntry[] = [];
+
+    for (const dataLine of lines) {
+      const [ipAddress, date, time, appName, version, id, description] =
+        dataLine.split(';');
+
+      if (!ipAddress || !description) {
+        continue
       }
 
-      const lines = (<string>(<unknown>data)).split('\n');
-
-      const result: LogEntry[] = lines.map((dataLine) => {
-        const [ipAddress, date, time, appName, version, id, description] =
-          dataLine.split(';');
-
-        const parsedDate = new Date(date);
-        const formattedDate = `${parsedDate
-          .getDate()
+      const parsedDate = new Date(date);
+      const formattedDate = `${parsedDate
+        .getDate()
+        .toString()
+        .padStart(2, '0')}-${(parsedDate.getMonth() + 1)
           .toString()
-          .padStart(2, '0')}-${(parsedDate.getMonth() + 1)
-            .toString()
-            .padStart(2, '0')}-${parsedDate.getFullYear()}`;
+          .padStart(2, '0')}-${parsedDate.getFullYear()}`;
 
-        return {
-          ipAddress,
-          date: formattedDate,
-          time,
-          appName,
-          version,
-          id,
-          description,
-        } as LogEntry;
-      });
+      const sanitizedData = {
+        ipAddress,
+        date: formattedDate,
+        time,
+        appName,
+        version,
+        id,
+        description,
+      } as LogEntry;
 
-      this.parsedLines.push(...result);
-    });
+      result.push(sanitizedData)
+    }
+
+    return result;
   }
 }
 

@@ -27,6 +27,7 @@ services:
       AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY'
       DB_REGION: 'eu-west-1'
       DB_URI: 'http://dynamodb-local:8000'
+      TABLE_NAME: 'LogEntries'
 networks:
   app_network:
     driver: bridge

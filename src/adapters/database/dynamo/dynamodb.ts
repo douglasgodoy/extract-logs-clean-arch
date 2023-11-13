@@ -10,6 +10,7 @@ const dynamodb: DatabaseType = {
       region: process.env.DB_REGION,
       endpoint: process.env.DB_URI,
     })
+
     const params = {
       TableName: 'LogEntries',
       KeySchema: [

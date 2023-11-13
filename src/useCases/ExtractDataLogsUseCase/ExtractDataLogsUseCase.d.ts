@@ -2,22 +2,20 @@ export type PathLike = string | Buffer | URL;
 export type PathOrFileDescriptor = PathLike | number;
 
 export type FileManager = {
-  readdir(
+  readdirSync(
     path: string,
-    callback: (err: NodeJS.ErrnoException | null, files: string[]) => void,
-  ): void;
+  ): any;
 
-  readFile(
+  readFileSync(
     path: PathOrFileDescriptor,
     options:
       | ({
-          encoding?: null | undefined;
-          flag?: string | undefined;
-        } & Abortable)
+        encoding?: null | undefined;
+        flag?: string | undefined;
+      } & Abortable)
       | undefined
       | null,
-    callback: (err: NodeJS.ErrnoException | null, data: Buffer) => void,
-  ): void;
+  ): any;
 };
 
 export type PathManager = {

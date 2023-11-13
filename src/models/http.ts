@@ -11,7 +11,6 @@ export interface HttpRequest<T = {}> {
 }
 
 export interface HttpApp {
-
     (req: HttpRequest, res: HttpResponse): any;
 
     set(setting: string, val: any): this;

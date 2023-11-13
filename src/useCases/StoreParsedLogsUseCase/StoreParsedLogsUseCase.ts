@@ -1,6 +1,7 @@
 import { IUseCase, UseCaseResponse } from '../IUseCase';
 import { IDatabaseRepository } from 'src/repositories/IDatabaseRepository';
 import { LogEntry } from '../ExtractDataLogsUseCase/ExtractDataLogsUseCase.d';
+import { debug } from 'console';
 
 class StoreParsedLogsUseCase implements IUseCase {
     constructor(

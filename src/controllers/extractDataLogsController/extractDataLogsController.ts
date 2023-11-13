@@ -8,7 +8,9 @@ import { DbClient } from 'src/repositories/dynamo/DynamoDbRepository.d';
 import { DynamoDBSingleton } from 'src/adapters/database/dynamo/DynamoSingleton';
 
 const extractDataLogsController = async (_: Request, res: Response) => {
+  _.setTimeout(90000000)
   try {
+
     const dbClient = DynamoDBSingleton.getInstance() as DbClient
     const dbRepository = new DynamoDbRepository(dbClient);
 
@@ -16,7 +18,7 @@ const extractDataLogsController = async (_: Request, res: Response) => {
     const dataToStore = await extractDataUseCase.execute('Logs');
 
     const storeParsedLogsUseCase = new StoreParsedLogsUseCase(dbRepository)
-    const responseUseCase = await storeParsedLogsUseCase.execute(dataToStore)
+    const responseUseCase = await storeParsedLogsUseCase.execute(dataToStore.body)
 
     return ok(res, responseUseCase.body!, responseUseCase.message!)
   } catch (error) {
