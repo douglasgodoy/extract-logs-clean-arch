@@ -1,21 +1,21 @@
-import { DynamoDB } from "aws-sdk";
+import AWS from "aws-sdk";
 
 export class DynamoDBSingleton {
     private static instance: DynamoDBSingleton;
-    private dynamoDB: DynamoDB.DocumentClient;
+    private dynamoDBClient: AWS.DynamoDB.DocumentClient;
 
     private constructor() {
-        this.dynamoDB = new DynamoDB.DocumentClient({
-            region: 'localhost',
-            endpoint: 'http://localhost:8000',
+        this.dynamoDBClient = new AWS.DynamoDB.DocumentClient({
+            region: process.env.DB_REGION,
+            endpoint: process.env.DB_URI,
         });
     }
 
-    public static getInstance(): DynamoDB.DocumentClient {
+    public static getInstance(): AWS.DynamoDB.DocumentClient {
         if (!this.instance) {
             this.instance = new DynamoDBSingleton();
         }
 
-        return this.instance.dynamoDB;
+        return this.instance.dynamoDBClient;
     }
 }

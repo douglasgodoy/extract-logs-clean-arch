@@ -1,14 +1,15 @@
 import AWS from 'aws-sdk';
-import { DynamoDBSingleton } from './DynamoSingleton';
 
 const dynamodb: DatabaseType = {
   startDatabase: async () => {
-    const dynamoDBInstance = DynamoDBSingleton.getInstance();
-
-    await dynamodb.createTableIfNotExists(dynamoDBInstance);
+    await dynamodb.createTableIfNotExists();
   },
 
-  createTableIfNotExists: async (db: AWS.DynamoDB) => {
+  createTableIfNotExists: async () => {
+    const db = new AWS.DynamoDB({
+      region: process.env.DB_REGION,
+      endpoint: process.env.DB_URI,
+    })
     const params = {
       TableName: 'LogEntries',
       KeySchema: [
@@ -25,13 +26,25 @@ const dynamodb: DatabaseType = {
       },
     };
 
-    db.createTable(params, (err, data) => {
+    db.describeTable({ TableName: params.TableName }, (err, data) => {
       if (err) {
-        console.error('Error creating table:', err);
+        if (err.code === 'ResourceNotFoundException') {
+          db.createTable(params, (err, data) => {
+            if (err) {
+              console.error('Error creating table:', err);
+            } else {
+              console.log('Table created successfully:', data);
+            }
+          });
+        } else {
+          console.error('Error describing table:', JSON.stringify(err, null, 2));
+        }
       } else {
-        console.log('Table created successfully:', data);
+        console.log('Table already exists. Table description JSON:', JSON.stringify(data, null, 2));
       }
     });
+
+
   },
 };
 
